@@ -73,7 +73,7 @@ public class UDPPlugin: CAPPlugin {
         var address = call.getString("address")
         let port = call.getInt("port") ?? -1
         if socket == nil || port<0 {
-            call.reject("Invalid Argument")
+            call.reject("Invalid Argument 1")
             return
         }
         if address == "0.0.0.0" {
@@ -96,10 +96,13 @@ public class UDPPlugin: CAPPlugin {
         var address = call.getString("address") ?? ""
         let port = call.getInt("port") ?? -1
         let socket = sockets[socketId]
-        let dataString = call.getString("buffer") ?? ""
-        let data = Data(base64Encoded: dataString, options: .ignoreUnknownCharacters) ?? Data.init()
+        let dataString = call.getArray("buffer", Int.self) ?? [-1]
+        let data = Data(dataString.map { UInt8($0) })
+    //  let encoded = dataString.data(using: .utf8)?
+        
+      //let data = Data(base64Encoded: dataString, options: .) ?? Data.init()
         if socket == nil || port < 0 || address == "" {
-            call.reject("Invalid Argument")
+            call.reject("Invalid Argument 2")
             return
         }
         if socket?.isBound == false {
@@ -113,7 +116,7 @@ public class UDPPlugin: CAPPlugin {
         if address.contains(":") && (!address.contains("%")) {
             address = address + "%en0"
         }
-        socket?.socket?.send(data, toHost: address, port: (port as NSNumber).uint16Value, withTimeout: -1, tag: -1)
+      socket?.socket?.send(data, toHost: address, port: (port as NSNumber).uint16Value, withTimeout: -1, tag: -1)
         call.resolve(["bytesSent": data.count])
     }
 
@@ -127,7 +130,7 @@ public class UDPPlugin: CAPPlugin {
         let socketId: Int = call.getInt("socketId") ?? -1
         let socket = sockets[socketId]
         if socket == nil {
-            call.reject("Invalid Argument")
+            call.reject("Invalid Argument 3")
             return
         }
         closeSocket(socket)
@@ -149,7 +152,7 @@ public class UDPPlugin: CAPPlugin {
         let socketId: Int = call.getInt("socketId") ?? -1
         let socket = sockets[socketId]
         if socket == nil {
-            call.reject("Invalid Argument")
+            call.reject("Invalid Argument 4")
             return
         }
         call.resolve(socket?.getInfo() ?? [String: Any]())
@@ -168,7 +171,7 @@ public class UDPPlugin: CAPPlugin {
         let socket = sockets[socketId]
         let enabled = call.getBool("enabled")
         if socket == nil || enabled == nil {
-            call.reject("Invalid Argument")
+            call.reject("Invalid Argument 5")
             return
         }
         socket?.broadcastEnabled = enabled ?? false
@@ -181,7 +184,7 @@ public class UDPPlugin: CAPPlugin {
         let address = call.getString("address")
         let socket = sockets[socketId]
         if socket == nil || address == nil {
-            call.reject("Invalid Argument")
+            call.reject("Invalid Argument 6")
             return
         }
         if socket?.multicastGroup.contains(address ?? "") ?? false {
@@ -202,7 +205,7 @@ public class UDPPlugin: CAPPlugin {
         let address = call.getString("address")
         let socket = sockets[socketId]
         if socket == nil || address == nil {
-            call.reject("Invalid Argument")
+            call.reject("Invalid Argument 7")
             return
         }
         if !(socket?.multicastGroup.contains(address ?? "") ?? false) {
@@ -224,7 +227,7 @@ public class UDPPlugin: CAPPlugin {
         let ttl = call.getInt("ttl") ?? -1
         let socket = sockets[socketId]
         if socket == nil || ttl == -1 {
-            call.reject("Invalid Argument")
+            call.reject("Invalid Argument 8")
             return
         }
 
@@ -253,7 +256,7 @@ public class UDPPlugin: CAPPlugin {
         let enabled = call.getBool("enabled")
         let socket = sockets[socketId]
         if socket == nil || enabled == nil {
-            call.reject("Invalid Argument")
+            call.reject("Invalid Argument 9")
             return
         }
         socket?.socket?.perform({ () -> Void in
@@ -363,7 +366,9 @@ public class UDPPlugin: CAPPlugin {
             ret["socketId"] = self.socketId
             ret["remoteAddress"] = GCDAsyncUdpSocket.host(fromAddress: address)
             ret["remotePort"] = GCDAsyncUdpSocket.port(fromAddress: address)
-            ret["buffer"] = data.base64EncodedString()
+            let dataInt = data.map { Int($0) }
+            ret["buffer"] = dataInt
+            print(dataInt)
             plugin?.notifyListeners("receive", data: ret, retainUntilConsumed: false)
         }
 
