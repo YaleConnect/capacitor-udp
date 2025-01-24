@@ -166,10 +166,11 @@ public class UDPPlugin extends Plugin {
             int socketId = call.getInt("socketId");
             String address = call.getString("address");
             int port = call.getInt("port");
-            List<Integer> bufferList = call.getArray("buffer", Integer.class);
+            JSArray bufferArray = call.getArray("buffer");
+            List<Integer> bufferList = bufferArray.toList();
             byte[] data = new byte[bufferList.size()];
             for (int i = 0; i < bufferList.size(); i++) {
-                data[i] = (byte) (int) bufferList.get(i); 
+                data[i] = (byte) (int) bufferList.get(i);
             }
             UdpSocket socket = obtainSocket(socketId);
             if (!socket.isBound) throw new Exception("Not bound yet");
