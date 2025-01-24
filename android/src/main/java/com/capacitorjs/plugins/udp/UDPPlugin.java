@@ -166,8 +166,11 @@ public class UDPPlugin extends Plugin {
             int socketId = call.getInt("socketId");
             String address = call.getString("address");
             int port = call.getInt("port");
-            String bufferString = call.getString("buffer");
-            byte[] data = Base64.decode(bufferString, Base64.DEFAULT);
+            List<Integer> bufferList = call.getArray("buffer", Integer.class);
+            byte[] data = new byte[bufferList.size()];
+            for (int i = 0; i < bufferList.size(); i++) {
+                data[i] = (byte) (int) bufferList.get(i); 
+            }
             UdpSocket socket = obtainSocket(socketId);
             if (!socket.isBound) throw new Exception("Not bound yet");
             socket.addSendPacket(address, port, data, call);
@@ -319,23 +322,33 @@ public class UDPPlugin extends Plugin {
     // different threads, and we need to send data and metadata in serial in order
     // to decode the receive event correctly. Alternatively, we can send Multipart
     // messages.
-    private synchronized void sendReceiveEvent(byte[] data, int socketId, String address, int port) {
-        JSObject ret = new JSObject();
-        try {
-            ret.put("socketId", socketId);
-            int ip6InterfaceIndex = address.indexOf("%");
-            if (ip6InterfaceIndex > 0) {
-                ret.put("remoteAddress", address.substring(0, ip6InterfaceIndex));
-            } else {
-                ret.put("remoteAddress", address);
-            }
-            ret.put("remotePort", port);
-            String bufferString = new String(Base64.encode(data, Base64.DEFAULT));
-            ret.put("buffer", bufferString);
-            //Log.d("Received", bufferString + ", from :" + ret.getMember("remoteAddress"));
-            notifyListeners("receive", ret, false);
-        } catch (Exception e) {}
+private synchronized void sendReceiveEvent(byte[] data, int socketId, String address, int port) {
+    JSObject ret = new JSObject();
+    try {
+        ret.put("socketId", socketId);
+
+        // Manejar direcciones IPv6 con interfaces
+        int ip6InterfaceIndex = address.indexOf("%");
+        if (ip6InterfaceIndex > 0) {
+            ret.put("remoteAddress", address.substring(0, ip6InterfaceIndex));
+        } else {
+            ret.put("remoteAddress", address);
+        }
+
+        ret.put("remotePort", port);
+
+        // Convertir byte[] a int[]
+        int[] buffer = new int[data.length];
+        for (int i = 0; i < data.length; i++) {
+            buffer[i] = data[i] & 0xFF; // Convertir a entero sin signo
+        }
+        ret.put("buffer", buffer);
+
+        notifyListeners("receive", ret, false);
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+}
 
     private void startSelectorThread() {
         if (selectorThread != null) return;
