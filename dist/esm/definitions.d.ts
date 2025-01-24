@@ -30,7 +30,7 @@ export interface UDPPlugin {
         socketId: number;
         address: string;
         port: number;
-        buffer: string;
+        buffer: number[];
     }): Promise<any>;
     closeAllSockets(): Promise<any>;
     close(options: {
