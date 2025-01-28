@@ -343,7 +343,7 @@ private synchronized void sendReceiveEvent(byte[] data, int socketId, String add
         for (int i = 0; i < data.length; i++) {
             buffer[i] = data[i] & 0xFF; // Convertir a entero sin signo
         }
-        ret.put("buffer", buffer);
+        ret.put("buffer", Arrays.toString(buffer));
 
         notifyListeners("receive", ret, false);
     } catch (Exception e) {
