@@ -71,12 +71,12 @@
       },
       {
         "name": "send",
-        "signature": "(options: { socketId: number; address: string; port: number; buffer: string; }) => Promise<any>",
+        "signature": "(options: { socketId: number; address: string; port: number; buffer: number[]; }) => Promise<any>",
         "parameters": [
           {
             "name": "options",
             "docs": "",
-            "type": "{ socketId: number; address: string; port: number; buffer: string; }"
+            "type": "{ socketId: number; address: string; port: number; buffer: number[]; }"
           }
         ],
         "returns": "Promise<any>",
@@ -229,7 +229,7 @@
       },
       {
         "name": "addListener",
-        "signature": "(events: 'receive', functions: (params: { socketId: number; buffer: string; }) => void) => PluginListenerHandle",
+        "signature": "(events: 'receive', functions: (params: { socketId: number; buffer: number[] | string; }) => void) => PluginListenerHandle",
         "parameters": [
           {
             "name": "events",
@@ -239,7 +239,7 @@
           {
             "name": "functions",
             "docs": "",
-            "type": "(params: { socketId: number; buffer: string; }) => void"
+            "type": "(params: { socketId: number; buffer: string | number[]; }) => void"
           }
         ],
         "returns": "PluginListenerHandle",
@@ -248,7 +248,7 @@
         "complexTypes": [
           "PluginListenerHandle"
         ],
-        "slug": "addlistenerreceive"
+        "slug": "addlistenerreceive-"
       },
       {
         "name": "addListener",
@@ -271,7 +271,7 @@
         "complexTypes": [
           "PluginListenerHandle"
         ],
-        "slug": "addlistenerreceiveerror"
+        "slug": "addlistenerreceiveerror-"
       }
     ],
     "properties": []

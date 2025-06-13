@@ -27,8 +27,8 @@ npx cap sync
 * [`setBroadcast(...)`](#setbroadcast)
 * [`setMulticastLoopbackMode(...)`](#setmulticastloopbackmode)
 * [`getJoinedGroups()`](#getjoinedgroups)
-* [`addListener('receive', ...)`](#addlistenerreceive)
-* [`addListener('receiveError', ...)`](#addlistenerreceiveerror)
+* [`addListener('receive', ...)`](#addlistenerreceive-)
+* [`addListener('receiveError', ...)`](#addlistenerreceiveerror-)
 * [Interfaces](#interfaces)
 
 </docgen-index>
@@ -99,12 +99,12 @@ bind(options: { socketId: number; address: string; port: number; }) => Promise<a
 ### send(...)
 
 ```typescript
-send(options: { socketId: number; address: string; port: number; buffer: string; }) => Promise<any>
+send(options: { socketId: number; address: string; port: number; buffer: number[]; }) => Promise<any>
 ```
 
-| Param         | Type                                                                              |
-| ------------- | --------------------------------------------------------------------------------- |
-| **`options`** | <code>{ socketId: number; address: string; port: number; buffer: string; }</code> |
+| Param         | Type                                                                                |
+| ------------- | ----------------------------------------------------------------------------------- |
+| **`options`** | <code>{ socketId: number; address: string; port: number; buffer: number[]; }</code> |
 
 **Returns:** <code>Promise&lt;any&gt;</code>
 
@@ -252,13 +252,13 @@ getJoinedGroups() => Promise<{ groups: [string]; }>
 ### addListener('receive', ...)
 
 ```typescript
-addListener(events: 'receive', functions: (params: { socketId: number; buffer: string; }) => void) => PluginListenerHandle
+addListener(events: 'receive', functions: (params: { socketId: number; buffer: number[] | string; }) => void) => PluginListenerHandle
 ```
 
-| Param           | Type                                                                    |
-| --------------- | ----------------------------------------------------------------------- |
-| **`events`**    | <code>'receive'</code>                                                  |
-| **`functions`** | <code>(params: { socketId: number; buffer: string; }) =&gt; void</code> |
+| Param           | Type                                                                                |
+| --------------- | ----------------------------------------------------------------------------------- |
+| **`events`**    | <code>'receive'</code>                                                              |
+| **`functions`** | <code>(params: { socketId: number; buffer: string \| number[]; }) =&gt; void</code> |
 
 **Returns:** <code><a href="#pluginlistenerhandle">PluginListenerHandle</a></code>
 
